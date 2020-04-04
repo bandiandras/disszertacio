@@ -1,0 +1,43 @@
+import os
+import csv
+
+def getListOfFiles(dirName):
+    # create a list of file and sub directories 
+    # names in the given directory 
+    listOfFile = os.listdir(dirName)
+    allFiles = list()
+    # Iterate over all the entries
+    for entry in listOfFile:
+        # Create full path
+        fullPath = os.path.join(dirName, entry)
+        # If entry is a directory then get the list of files in this directory 
+        if os.path.isdir(fullPath):
+            allFiles = allFiles + getListOfFiles(fullPath)
+        else:
+            if fullPath.endswith('.csv'):
+                allFiles.append(fullPath)
+                
+    return allFiles
+
+
+def main():
+    
+    dirName = r"C:\Users\andra\Documents\Egyetem\Allamvizsga\Adat\MOBISIG"
+    
+    # Get the list of all files in directory tree at given path
+    listOfFiles = getListOfFiles(dirName)
+    
+    with open('histogram_Mobisig.csv', 'w', newline='') as file:
+        writer = csv.writer(file)     
+        # Print the files
+        for elem in listOfFiles:
+            #check length of file and print length to a file
+            with open(elem) as f:
+                writer.writerow([elem, (sum(1 for line in f))])
+ 
+    print ("****************")
+        
+        
+        
+if __name__ == '__main__':
+    main()
