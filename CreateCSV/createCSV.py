@@ -73,11 +73,6 @@ def main():
             cnt += 1
         #signature belongs to anmother user -> write line to the csv files
         else:
-            #csv
-            # genuine.csv (v): 
-            #     sor: N(X1) + N(Y1) + userid --> (2N+1)
-            # forgery.csv (f)
-            #     sor: N(X1) + N(Y1) + userid --> (2N+1)
             utils.writeSpecifiCharacteristicsToCSV(OUTPUT_FILE_PATH_GENUINE, geniuneSignatures)
             utils.writeSpecifiCharacteristicsToCSV(OUTPUT_FILE_PATH_FORGERY, forgerySignatures)
 

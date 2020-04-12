@@ -10,7 +10,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 class utils:
 
-    #Gets list of files from the directory given in the dirName parameter
+    #Gets list of files from the directory given in the dirName parameter(nested directories as well)
     @staticmethod
     def getListOfFiles(dirName):
         # create a list of file and sub directories 
@@ -30,6 +30,7 @@ class utils:
                     
         return allFiles
 
+    #Converts the two dimentsional list to a list of Point obejcts
     @staticmethod
     def returnStructureOfXYP(dataframe):
         sig = list()
@@ -104,33 +105,11 @@ class utils:
         sigWithCharacteristics.append(point)
         return sigWithCharacteristics
 
+    #Normalize the signature using MinMax normalization
     @staticmethod
     def normlaizeSignatureMinMax(sig):
-        # xCoords = []
-        # yCoords = []
-        # pList = []
-    
-        # for point in sig:
-        #     xCoords.append(point[0])
-        #     yCoords.append(point[1])
-        #     pList.append(point[2])
-        
         scaler = MinMaxScaler(feature_range=(0, 1))
-        # xCoords = scaler.fit_transform(xCoords)
-        # yCoords = scaler.fit_transform(yCoords)
-        # pList = scaler.fit_transform(pList)
-
-        # cnt = 0
         normalizedSignature = scaler.fit_transform(sig)
-        
-        # while cnt < len(xCoords) - 1:
-        #     point = []
-        #     point[0] = xCoords[cnt]
-        #     point[1] = yCoords[cnt]
-        #     point[2] = pList[cnt]
-        #     normalizedSignature.append(point)    
-        #     cnt += 1
-        
         return normalizedSignature
 
    #reads csv file to dataframe and returns the values
@@ -155,6 +134,8 @@ class utils:
             for line in data:
                 writer.writerow([line.x, line.y, line.p, line.x1, line.y1, line.x2, line.y2])       
     
+    #Write selected characterisitcs to csv as follows:
+    # row: N(X1) + N(Y1) + userid --> (2N+1)
     @staticmethod
     def writeSpecifiCharacteristicsToCSV(newFilename, data):
         with open( newFilename, 'a', newline='') as file:

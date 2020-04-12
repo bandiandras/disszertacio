@@ -9,6 +9,7 @@ import numpy as np
 from scipy import interpolate
 import matplotlib.pyplot as plt
 
+#returns a list of files from the directory given in the dirName parameter (files in nested directories as well) 
 def getListOfFiles(dirName):
 	# create a list of file and sub directories 
 	# names in the given directory 
@@ -27,7 +28,7 @@ def getListOfFiles(dirName):
 	return allFiles
 
 
-#?? read entire csv with pandas and use pandas to resample
+#read CSV file to dataframe and return the values
 def readCSVToDataframe(filepath):
 	dataframe = read_csv(filepath)
 	return dataframe.values
@@ -69,7 +70,6 @@ def resampleSignature2(sig, targetLength):
 	else:
 		sig = insertZeros(sig, targetLength)
 	return sig
-
 
 
 # insert coordinates based on previous and next element, until the desired length is reached
@@ -147,8 +147,6 @@ def main():
 			xyp = resampleSignature2(xyp, N)
 			for point in xyp:
 				writer.writerow([point.x, point.y, point.p])
-		
-		
 
 
 if __name__ == "__main__":
