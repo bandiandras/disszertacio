@@ -6,6 +6,7 @@ import numpy as np
 from pandas import read_csv
 from Model.point import Point
 from settings import *
+from sklearn.preprocessing import MinMaxScaler
 
 class utils:
 
@@ -28,38 +29,6 @@ class utils:
                     allFiles.append(fullPath)
                     
         return allFiles
-    
-    #reads csv file to dataframe and returns the values
-    @staticmethod
-    def readCSVToArray(filepath):
-       dataframe = read_csv(filepath)
-       return dataframe.values
-
-    @staticmethod
-    def writeDataFrameToCSV(newFilename, data):
-        with open( newFilename, 'w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(['x', 'y', 'p'])			
-            for line in data:
-                writer.writerow([line[0], line[1], line[2]])
-
-    @staticmethod
-    def writeArrayOfPointsToCSV(newFilename, data):
-        with open( newFilename, 'w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(['x', 'y', 'p', 'x1', 'y1', 'x2', 'y2'])			
-            for line in data:
-                writer.writerow([line.x, line.y, line.p, line.x1, line.y1, line.x2, line.y2])       
-    
-    @staticmethod
-    def writeSpecifiCharacteristicsToCSV(newFilename, data):
-        with open( newFilename, 'a', newline='') as file:
-            writer = csv.writer(file, dialect='unix', delimiter = ",")
-            row = data[0]
-            row.extend(data[1])
-            row.append(data[2])
-
-            writer.writerow(row)
 
     @staticmethod
     def returnStructureOfXYP(dataframe):
@@ -124,8 +93,77 @@ class utils:
             sigWithCharacteristics.append(point)
             idx += 1
         
+        point = Point()
+        point.x = sig[idx - 1][0]
+        point.y = sig[idx - 1][1]
+        point.p = sig[idx - 1][2]
+        point.x1 = sig[idx - 1][0] - sig[idx-2][0]
+        point.y1 = sig[idx - 1][1] - sig[idx-2][1]
+        point.x2 = point.x1 - previousPoint.x1
+        point.y2 = point.y1 - previousPoint.y1
+        sigWithCharacteristics.append(point)
         return sigWithCharacteristics
 
+    @staticmethod
+    def normlaizeSignatureMinMax(sig):
+        # xCoords = []
+        # yCoords = []
+        # pList = []
+    
+        # for point in sig:
+        #     xCoords.append(point[0])
+        #     yCoords.append(point[1])
+        #     pList.append(point[2])
+        
+        scaler = MinMaxScaler(feature_range=(0, 1))
+        # xCoords = scaler.fit_transform(xCoords)
+        # yCoords = scaler.fit_transform(yCoords)
+        # pList = scaler.fit_transform(pList)
+
+        # cnt = 0
+        normalizedSignature = scaler.fit_transform(sig)
+        
+        # while cnt < len(xCoords) - 1:
+        #     point = []
+        #     point[0] = xCoords[cnt]
+        #     point[1] = yCoords[cnt]
+        #     point[2] = pList[cnt]
+        #     normalizedSignature.append(point)    
+        #     cnt += 1
+        
+        return normalizedSignature
+
+   #reads csv file to dataframe and returns the values
+    @staticmethod
+    def readCSVToArray(filepath):
+       dataframe = read_csv(filepath)
+       return dataframe.values
+
+    @staticmethod
+    def writeDataFrameToCSV(newFilename, data):
+        with open( newFilename, 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['x', 'y', 'p'])			
+            for line in data:
+                writer.writerow([line[0], line[1], line[2]])
+
+    @staticmethod
+    def writeArrayOfPointsToCSV(newFilename, data):
+        with open( newFilename, 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['x', 'y', 'p', 'x1', 'y1', 'x2', 'y2'])			
+            for line in data:
+                writer.writerow([line.x, line.y, line.p, line.x1, line.y1, line.x2, line.y2])       
+    
+    @staticmethod
+    def writeSpecifiCharacteristicsToCSV(newFilename, data):
+        with open( newFilename, 'a', newline='') as file:
+            writer = csv.writer(file, dialect='unix', delimiter = ",")
+            row = data[0]
+            row.extend(data[1])
+            row.append(data[2])
+
+            writer.writerow(row)
 
 
     

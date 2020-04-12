@@ -1,4 +1,3 @@
-from sklearn.preprocessing import MinMaxScaler
 import sys
 import os
 sys.path.append(r"C:\Users\andra\Documents\Egyetem\Mesteri\Disszentacio\Project\Sig")
@@ -12,9 +11,8 @@ from scipy import interpolate
 import matplotlib.pyplot as plt
 
 def main():
-    sigPath = r"C:\Users\andra\Documents\Egyetem\Mesteri\Disszentacio\Project\MCYT_resampled1"
 	# Get the list of all files in directory tree at given path
-    listOfFiles = utils.getListOfFiles(sigPath)
+    listOfFiles = utils.getListOfFiles(INPUT_DATASET_PATH)
     loaded = list()
 
     #counter used for iteriting throug the list of files
@@ -31,6 +29,10 @@ def main():
 
     #first signature from the dataset
     data = utils.readCSVToArray(listOfFiles[cnt])
+
+    #standardize signature
+    data = utils.normlaizeSignatureMinMax(data)
+
     sigaWithCharacteristics = utils.calculateCharacterstics(data)
     selectedCharacteristiclist = utils.selectCharacteristics(sigaWithCharacteristics)
     #check filename if signature is genuine or forgery

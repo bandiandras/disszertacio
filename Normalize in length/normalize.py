@@ -2,6 +2,7 @@ import sys
 import os
 sys.path.append(os.path.abspath("Model/"))
 
+from settings import *
 from utils import *
 from Model.point import Point
 import numpy as np
@@ -123,17 +124,15 @@ def downSampleSignature(sig, targetLength):
 
 
 def main():
-	sigPath = r"C:\Users\andra\Documents\Egyetem\Allamvizsga\Adat\MCYT"
-	#sigPath = r"C:\Users\andra\Documents\Egyetem\Allamvizsga\Adat\MCYT"
 	# Get the list of all files in directory tree at given path
-	listOfFiles = getListOfFiles(sigPath)
+	listOfFiles = getListOfFiles(DATASET_PATH)
 
 	loaded = list()
 
 	for name in listOfFiles:
 		splittedFilename = name.split('\\')
-		newfoldername = 'C:\\Users\\andra\\Documents\\Egyetem\\Mesteri\\Disszentacio\\Project\\MCYT_resampled2\\' + splittedFilename[len(splittedFilename) - 2]
-		newFilename = 'C:\\Users\\andra\\Documents\\Egyetem\\Mesteri\\Disszentacio\\Project\\MCYT_resampled2\\' + splittedFilename[len(splittedFilename) - 2] + '\\' + splittedFilename[len(splittedFilename) - 1]
+		newfoldername = NEW_DATASET_PATH + splittedFilename[len(splittedFilename) - 2]
+		newFilename = NEW_DATASET_PATH + splittedFilename[len(splittedFilename) - 2] + '\\' + splittedFilename[len(splittedFilename) - 1]
 		
 		if not os.path.isdir(newfoldername):
 			os.makedirs(newfoldername)
@@ -145,7 +144,7 @@ def main():
 			xyp = returnStructureOfXYP(data)
 			
 			# xyp = resampleSignature(xyp, 512)
-			xyp = resampleSignature2(xyp, 512)
+			xyp = resampleSignature2(xyp, N)
 			for point in xyp:
 				writer.writerow([point.x, point.y, point.p])
 		
