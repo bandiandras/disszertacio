@@ -7,7 +7,6 @@ from Utils.utils import *
 from Model.point import Point
 import numpy as np
 import pandas as pd
-from scipy import interpolate
 import matplotlib.pyplot as plt
 
 def main():
