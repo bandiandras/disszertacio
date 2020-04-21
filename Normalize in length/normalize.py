@@ -1,5 +1,6 @@
 import sys
 import os
+import random
 sys.path.append(os.path.abspath("Model/"))
 
 from settings import *
@@ -111,7 +112,7 @@ def truncateSignature(sig, targetLength):
 #check actual and target length, accordgin to that, remove every n-th element of the array, until targetLength is reached
 #determine n
 #possible improvement: multiple smaller downsampleings
-def downSampleSignature(sig, targetLength):
+def downSampleSignatureOld(sig, targetLength):
 	while len(sig) > targetLength:
 		i = 1
 		while i < len(sig):
@@ -122,6 +123,10 @@ def downSampleSignature(sig, targetLength):
 				break
 	return sig 
 
+def downSampleSignature(sig, targetLength):
+	while len(sig) > targetLength:
+		del sig[random.randint(0, len(sig)-1)]
+	return sig 
 
 def main():
 	# Get the list of all files in directory tree at given path
@@ -143,8 +148,8 @@ def main():
 			data = readCSVToDataframe(name)		
 			xyp = returnStructureOfXYP(data)
 			
-			# xyp = resampleSignature(xyp, 512)
-			xyp = resampleSignature2(xyp, N)
+			xyp = resampleSignature(xyp, 512)
+			# xyp = resampleSignature2(xyp, N)
 			for point in xyp:
 				writer.writerow([point.x, point.y, point.p])
 

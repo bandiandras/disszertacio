@@ -9,7 +9,7 @@ N = 512
 
 INPUT_DATASET_PATH = r"C:\Users\andra\Documents\Egyetem\Mesteri\Disszentacio\Project\MCYT_resampled1"
 
-OUTPUT_FILE_PATH_GENUINE = r"C:\Users\andra\Documents\Egyetem\Mesteri\Disszentacio\Project\genuine.csv"
-OUTPUT_FILE_PATH_FORGERY = r"C:\Users\andra\Documents\Egyetem\Mesteri\Disszentacio\Project\forgery.csv"
+OUTPUT_FILE_PATH_GENUINE = r"C:\Users\andra\Documents\Egyetem\Mesteri\Disszentacio\Project\genuine1.csv"
+OUTPUT_FILE_PATH_FORGERY = r"C:\Users\andra\Documents\Egyetem\Mesteri\Disszentacio\Project\forgery1.csv"
 
 TIME_SERIES = TimeSeries.X1Y1

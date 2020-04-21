@@ -63,6 +63,26 @@ class utils:
         listToReturn.append(sublist2)
         return listToReturn
 
+    @staticmethod
+    def standardize_rows( df):
+        array = df.values
+        nsamples, nfeatures = array.shape
+        nfeatures = nfeatures - 1
+        X = array[:, 0:nfeatures]
+        y = array[:, -1]
+        
+        rows, cols = X.shape
+        for i in range(0, rows):
+            row = X[i,:]
+            mu = np.mean( row )
+            sigma = np.std( row )
+            if( sigma == 0 ):
+                sigma = 0.0001
+            X[i,:] = (X[i,:] - mu) / sigma    
+        df = pd.DataFrame( X )
+        df['user'] = y 
+        return df
+
     #calculates X1, Y1, X2 and Y2 characteristics of a signature
     @staticmethod
     def calculateCharacterstics(sig):
