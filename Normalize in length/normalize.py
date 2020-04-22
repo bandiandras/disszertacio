@@ -50,7 +50,10 @@ def returnStructureOfXYP(dataframe):
 		point = Point()
 		point.x = entry[0]
 		point.y = entry[1]
-		point.p = entry[2]
+		# for MCYT
+		# point.p = entry[2]
+		# for MOBISIG
+		point.p = entry[3]
 		sig.append(point)
 	return sig
 
@@ -148,8 +151,8 @@ def main():
 			data = readCSVToDataframe(name)		
 			xyp = returnStructureOfXYP(data)
 			
-			xyp = resampleSignature(xyp, 512)
-			# xyp = resampleSignature2(xyp, N)
+			# xyp = resampleSignature(xyp, 512)
+			xyp = resampleSignature2(xyp, N)
 			for point in xyp:
 				writer.writerow([point.x, point.y, point.p])
 

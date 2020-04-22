@@ -15,44 +15,13 @@ def main():
     loaded = list()
 
     #counter used for iteriting throug the list of files
-    cnt = 1
-    splittedFilename = ''
-    splittedFilenamePrevioius = ''
-    geniuneSignatures = []
-    forgerySignatures = []
-
-    splittedFilename = listOfFiles[cnt].split('\\')
-    splittedFilenamePrevioius = listOfFiles[cnt - 1].split('\\')
-
-    userid = splittedFilename[len(splittedFilename) - 2]
-
-    #first signature from the dataset
-    data = utils.readCSVToArray(listOfFiles[cnt])
-
-    #standardize signature
-    data = utils.normlaizeSignatureMinMax(data)
-
-    sigaWithCharacteristics = utils.calculateCharacterstics(data)
-    selectedCharacteristiclist = utils.selectCharacteristics(sigaWithCharacteristics)
-
-    #check filename if signature is genuine or forgery
-    #genuine contains v, forgery contains f
-    if "f" in splittedFilename[len(splittedFilename) - 1]:
-        forgerySignatures = selectedCharacteristiclist
-        forgerySignatures.append(userid)
-        utils.writeSpecifiCharacteristicsToCSV(OUTPUT_FILE_PATH_GENUINE, forgerySignatures)
-    else:
-        geniuneSignatures = selectedCharacteristiclist
-        geniuneSignatures.append(userid)
-        utils.writeSpecifiCharacteristicsToCSV(OUTPUT_FILE_PATH_FORGERY, geniuneSignatures)
-
+    cnt = 0
 
     while cnt < len(listOfFiles):
         geniuneSignatures = []
         forgerySignatures = []
 
         splittedFilename = listOfFiles[cnt].split('\\')
-        splittedFilenamePrevioius = listOfFiles[cnt - 1].split('\\')
 
         userid = splittedFilename[len(splittedFilename) - 2]
 
@@ -61,7 +30,7 @@ def main():
         selectedCharacteristiclist = utils.selectCharacteristics(sigaWithCharacteristics)
         #check filename if signature is genuine or forgery
         #genuine contains v, forgery contains f
-        if "f" in splittedFilename[len(splittedFilename) - 1]:
+        if ("f" in splittedFilename[len(splittedFilename) - 1]) or ("F" in splittedFilename[len(splittedFilename) - 1]):
                 forgerySignatures = selectedCharacteristiclist
                 forgerySignatures.append(userid)              
                 utils.writeSpecifiCharacteristicsToCSV(OUTPUT_FILE_PATH_FORGERY, forgerySignatures)
@@ -70,7 +39,7 @@ def main():
                 geniuneSignatures.append(userid)
                 utils.writeSpecifiCharacteristicsToCSV(OUTPUT_FILE_PATH_GENUINE, geniuneSignatures)
 
-        cnt += 1       
+        cnt += 1
     
 
 if __name__ == "__main__":
