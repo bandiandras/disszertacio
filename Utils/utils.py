@@ -3,6 +3,7 @@ from os import listdir
 from os.path import isfile, join
 import csv
 import numpy as np
+import pandas as pd
 from pandas import read_csv
 from Model.point import Point
 from settings import *
@@ -63,6 +64,7 @@ class utils:
         listToReturn.append(sublist2)
         return listToReturn
 
+    #standardizes rows of the dataframe from the df input parameter
     @staticmethod
     def standardize_rows( df):
         array = df.values

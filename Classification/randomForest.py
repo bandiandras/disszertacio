@@ -25,11 +25,10 @@ def main():
 
     # X = scaler.fit_transform(X)
     X = np.nan_to_num(X)
-    model = RandomForestClassifier(n_estimators=N_ESTIMATORS)   
+    model = RandomForestClassifier(n_estimators=N_ESTIMATORS_RF)   
     scoring = ['accuracy']
-    num_folds = 10
-    scores = cross_val_score(model , X ,y , cv = NUM_FOLDS)
-    for i in range(0,num_folds):
+    scores = cross_val_score(model , X ,y , cv = NUM_FOLDS_RF)
+    for i in range(0,NUM_FOLDS_RF):
         print('\tFold '+str(i+1)+':' + str(scores[ i ]))
     print("accuracy : %0.4f (%0.4f)" % (scores.mean() , scores.std())) 
 
