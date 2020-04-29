@@ -29,28 +29,46 @@ def OneClassSVMClassifier(user_train, user_test, other_users_array):
     auc = metrics.auc(fpr, tpr)
     return auc
 
-def returnTraindAndTestData(df, df_forgery):
-    user_train = []
-    user_test = []
-    other_users_array = []
-    userid = ''
-    
-    user_train = df.head(TRAINING_SAMPLES_SVM)
-    df = df.iloc[TRAINING_SAMPLES_SVM:]
+def returnTraindAndTestDataGenuine(df, userids, i):
+    userid = userids[i]
+    user_train_data = df.loc[df.iloc[:, -1].isin([userid])]
+    # Select data for training
+    user_train_data = user_train_data.drop(user_train_data.columns[-1], axis=1)
+    user_array = user_train_data.values
 
-    user_test = df.head(GENUINE_SIGNATURES_SVM)
-    df = df.iloc[GENUINE_SIGNATURES_SVM:]
+    num_samples = user_array.shape[0]
+    train_samples = (int)(num_samples * 0.66)
+    test_samples = num_samples - train_samples
+    # print("#train_samples: "+str(train_samples)+"\t#test_samples: "+ str(test_samples))
+    user_train = user_array[0:train_samples,:]
+    user_test = user_array[train_samples:num_samples,:]
 
-    other_users_array = df_forgery.head(FORGERY_SIGNATURES_SVM)
+    other_users_data = df.loc[~df.iloc[:, -1].isin([userid])]
+    other_users_data = other_users_data.drop(other_users_data.columns[-1], axis=1)
+    other_users_array = other_users_data.values 
 
-    userid = user_train.iloc[:,-1].values[0]
+    return user_train, user_test, other_users_array 
 
-    #delete userids from every line
-    user_train = user_train[user_train.columns[:-1]]
-    user_test = user_test[user_test.columns[:-1]]
-    other_users_array = other_users_array[other_users_array.columns[:-1]]
 
-    return user_train, user_test, other_users_array, userid 
+def returnTraindAndTestDataForgery(df, df_f, userids, i):
+    userid = userids[i]
+    user_train_data = df.loc[df.iloc[:, -1].isin([userid])]
+    # Select data for training
+    user_train_data = user_train_data.drop(user_train_data.columns[-1], axis=1)
+    user_array = user_train_data.values
+
+    num_samples = user_array.shape[0]
+    train_samples = (int)(num_samples * 0.66)
+    test_samples = num_samples - train_samples
+    # print("#train_samples: "+str(train_samples)+"\t#test_samples: "+ str(test_samples))
+    user_train = user_array[0:train_samples,:]
+    user_test = user_array[train_samples:num_samples,:]
+
+    other_users_data = df_f.loc[df_f.iloc[:, -1].isin([userid])]
+    other_users_data = other_users_data.drop(other_users_data.columns[-1], axis=1)
+    other_users_array = other_users_data.values 
+
+    return user_train, user_test, other_users_array 
 
 def main():
     auc_list = []
@@ -61,19 +79,24 @@ def main():
 
     print("FILE FORGERY: "+ FILENAME_FORGERY)
     df_f = pd.read_csv(FILENAME_FORGERY)
-    df_f = utils.standardize_rows(df)
+    df_f = utils.standardize_rows(df_f)
 
-    #iterate through dataframe and make test datasets per user
-    while (df.shape[0] > 0) & (df_f.shape[0] > 0):
-        user_gen = df.head(NR_OF_GENUINE_SIGS_OF_USER)
-        df = df.iloc[NR_OF_GENUINE_SIGS_OF_USER:]
 
-        user_for = df_f.head(NR_OF_FORGERY_SIGS_OF_USER)
-        df_f = df_f.iloc[NR_OF_FORGERY_SIGS_OF_USER:]
+    userids = utils.create_userids( df )
+    NUM_USERS = len(userids)
 
-        user_train, user_test, other_users_array, userid = returnTraindAndTestData(user_gen, user_for)
+    auc_list = list()
+    eer_list = list()
+    global_positive_scores = list()
+    global_negative_scores = list()
+
+    for i in range(0,NUM_USERS):
+        if SKILLED_FORGERY:
+            user_train, user_test, other_users_array = returnTraindAndTestDataForgery(df, df_f, userids, i)
+        else:
+            user_train, user_test, other_users_array = returnTraindAndTestDataGenuine(df, userids, i)
+
         auc = OneClassSVMClassifier(user_train, user_test, other_users_array)
-
         auc_list.append(auc)
 
     print('mean: %7.4f, std: %7.4f' % ( np.mean(auc_list), np.std(auc_list)) )

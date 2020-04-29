@@ -11,6 +11,22 @@ from sklearn.preprocessing import MinMaxScaler
 
 class utils:
 
+    @staticmethod
+    # function to get unique values 
+    def unique(list1):       
+        # insert the list to the set 
+        list_set = set(list1) 
+        # convert the set to the list 
+        unique_list = (list(list_set)) 
+        return unique_list
+
+    @staticmethod
+    # returns the list of unique classids from the last column
+    def create_userids( df ):
+        array = df.values
+        y = array[:, -1]
+        return utils.unique( y )
+
     #Gets list of files from the directory given in the dirName parameter(nested directories as well)
     @staticmethod
     def getListOfFiles(dirName):
