@@ -27,7 +27,9 @@ def OneClassSVMClassifier(user_train, user_test, other_users_array):
 
     fpr, tpr, thresholds = metrics.roc_curve(y, scores, pos_label=1)
     auc = metrics.auc(fpr, tpr)
-    return auc
+    EER = compute_AUC_EER(positive_scores, negative_scores)
+
+    return auc, EER
 
 def returnTraindAndTestDataGenuine(df, userids, i):
     userid = userids[i]
@@ -70,6 +72,23 @@ def returnTraindAndTestDataForgery(df, df_f, userids, i):
 
     return user_train, user_test, other_users_array 
 
+def compute_AUC_EER(positive_scores, negative_scores):  
+    zeros = np.zeros(len(negative_scores))
+    ones  = np.ones(len(positive_scores))
+    y = np.concatenate((zeros, ones))
+    scores = np.concatenate((negative_scores, positive_scores))
+    fpr, tpr, threshold = metrics.roc_curve(y, scores, pos_label=1)
+    roc_auc = metrics.auc(fpr, tpr)
+    # Calculating EER
+    fnr = 1-tpr
+    EER_threshold = threshold[np.argmin(abs(fnr-fpr))]
+    
+    # print EER_threshold
+    EER_fpr = fpr[np.argmin(np.absolute((fnr-fpr)))]
+    EER_fnr = fnr[np.argmin(np.absolute((fnr-fpr)))]
+    EER = 0.5 * (EER_fpr+EER_fnr)
+    return EER
+
 def main():
     auc_list = []
 
@@ -96,10 +115,12 @@ def main():
         else:
             user_train, user_test, other_users_array = returnTraindAndTestDataGenuine(df, userids, i)
 
-        auc = OneClassSVMClassifier(user_train, user_test, other_users_array)
+        auc, eer = OneClassSVMClassifier(user_train, user_test, other_users_array)
         auc_list.append(auc)
+        eer_list.append(eer)
 
-    print('mean: %7.4f, std: %7.4f' % ( np.mean(auc_list), np.std(auc_list)) )
+    print('AUC mean: %7.4f, std: %7.4f' % ( np.mean(auc_list), np.std(auc_list)) )
+    print('EER mean: %7.4f, std: %7.4f' % ( np.mean(eer_list), np.std(eer_list)) )
 
 
 if __name__ == "__main__":
