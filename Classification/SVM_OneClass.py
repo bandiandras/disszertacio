@@ -12,13 +12,7 @@ from matplotlib.pyplot import plot
 from sklearn import metrics
 from Utils.utils import *
 
-def OneClassSVMClassifier(user_train, user_test, other_users_array):
-    clf = OneClassSVM(gamma='scale')
-    clf.fit(user_train)
-
-    positive_scores = clf.score_samples(user_test)
-    negative_scores =  clf.score_samples(other_users_array)   
-
+def OneClassSVMClassifierCalculateAUCEER(positive_scores, negative_scores):
     zeros = np.zeros(len(negative_scores))
     ones  = np.ones(len(positive_scores))
     y = np.concatenate((zeros, ones))
@@ -30,6 +24,16 @@ def OneClassSVMClassifier(user_train, user_test, other_users_array):
     EER = compute_AUC_EER(positive_scores, negative_scores)
 
     return auc, EER
+
+
+def OneClassSVMClassifierCalculateScores(user_train, user_test, other_users_array):
+    clf = OneClassSVM(gamma='scale')
+    clf.fit(user_train)
+
+    positive_scores = clf.score_samples(user_test)
+    negative_scores =  clf.score_samples(other_users_array)   
+    
+    return positive_scores, negative_scores
 
 def returnTraindAndTestDataGenuine(df, userids, i):
     userid = userids[i]
@@ -115,12 +119,18 @@ def main():
         else:
             user_train, user_test, other_users_array = returnTraindAndTestDataGenuine(df, userids, i)
 
-        auc, eer = OneClassSVMClassifier(user_train, user_test, other_users_array)
+        positive_scores, negative_scores = OneClassSVMClassifierCalculateScores(user_train, user_test, other_users_array)
+        global_positive_scores.extend(positive_scores)
+        global_negative_scores.extend(negative_scores)
+        auc, eer = OneClassSVMClassifierCalculateAUCEER(positive_scores, negative_scores)
         auc_list.append(auc)
         eer_list.append(eer)
 
-    print('AUC mean: %7.4f, std: %7.4f' % ( np.mean(auc_list), np.std(auc_list)) )
-    print('EER mean: %7.4f, std: %7.4f' % ( np.mean(eer_list), np.std(eer_list)) )
+    globalAUC, globalEER = OneClassSVMClassifierCalculateAUCEER(global_positive_scores, global_negative_scores)
+    print('aAUC mean: %7.4f, std: %7.4f' % ( np.mean(auc_list), np.std(auc_list)) )
+    print('aEER mean: %7.4f, std: %7.4f' % ( np.mean(eer_list), np.std(eer_list)) )
+    print('AUC mean: %7.4f' % (globalAUC))
+    print('EER mean: %7.4f' % (globalEER))
 
 
 if __name__ == "__main__":

@@ -13,8 +13,6 @@ NUM_FOLDS_RF = 10
 
 #OneClassSVM
 TRAINING_SAMPLES_SVM = 15
-GENUINE_SIGNATURES_SVM = 10 
-FORGERY_SIGNATURES_SVM = 25
 
 #Measurment settings -> if true, skilled forgery scenario will be executed, if false, random forgery
 SKILLED_FORGERY = True
