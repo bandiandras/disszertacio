@@ -2,13 +2,14 @@ import sys
 import os
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 sys.path.append(r"C:\Users\andra\Documents\Egyetem\Mesteri\Disszentacio\Project\Sig")
 
 from settings import *
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.svm import OneClassSVM
 from sklearn.model_selection import cross_val_score
-from matplotlib.pyplot import plot
 from sklearn import metrics
 from Utils.utils import *
 
@@ -132,6 +133,19 @@ def main():
     print('AUC mean: %7.4f' % (globalAUC))
     print('EER mean: %7.4f' % (globalEER))
 
+    zeros = np.zeros(len(global_negative_scores))
+    ones  = np.ones(len(global_positive_scores))
+    y = np.concatenate((zeros, ones))
+    scores = np.concatenate((global_negative_scores, global_positive_scores))
+    data = {'Score': scores, 'Genuine': y}
 
+    #save scores to csv files
+    np.savetxt("genuineScores.csv", global_positive_scores, delimiter=",")
+    np.savetxt("forgeryScores.csv", global_negative_scores, delimiter=",")
+
+    #save auc and eer list to csv files
+    np.savetxt("OneClassSVM_AUC.csv", auc_list, delimiter=",")
+    np.savetxt("OneClassSVM_EER.csv", eer_list, delimiter=",")
+    
 if __name__ == "__main__":
     main()
