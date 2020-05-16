@@ -29,11 +29,6 @@ def main():
 
     positive_scores = flatten(positive_scores)
     negative_scores = flatten(negative_scores)
-    # zeros = np.zeros(len(negative_scores))
-    # ones  = np.ones(len(positive_scores))
-    # y = np.concatenate((zeros, ones))
-    # scores = np.concatenate((negative_scores, positive_scores))
-    # data = {'Scores': scores, 'Genuine': y}
     
     # Histograms for each species
     sns.distplot(negative_scores, label="Negative Scores", kde=False)

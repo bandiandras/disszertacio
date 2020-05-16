@@ -9,6 +9,9 @@ __pycache__/
 # csv files
 *.csv
 
+#hdf5 files
+*.hdf5
+
 # Distribution / packaging
 .Python
 build/

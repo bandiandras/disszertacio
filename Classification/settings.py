@@ -1,5 +1,5 @@
-FILENAME_GENUINE = r'C:\Users\andra\Documents\Egyetem\Mesteri\Disszentacio\Project\genuine1_MCYT.csv'
-FILENAME_FORGERY = r'C:\Users\andra\Documents\Egyetem\Mesteri\Disszentacio\Project\forgery1_MCYT.csv'
+FILENAME_GENUINE = r'C:\Users\andra\Documents\Egyetem\Mesteri\Disszentacio\Project\genuine1_MOBISIG.csv'
+FILENAME_FORGERY = r'C:\Users\andra\Documents\Egyetem\Mesteri\Disszentacio\Project\forgery1_MOBISIG.csv'
 
 #Dataset related settings
 NR_OF_USERS = 100
@@ -14,4 +14,4 @@ NUM_FOLDS_RF = 10
 TRAINING_SAMPLES_SVM = 15
 
 #Measurment settings -> if true, skilled forgery scenario will be executed, if false, random forgery
-SKILLED_FORGERY = False
+SKILLED_FORGERY = True
