@@ -70,8 +70,8 @@ def main():
     cb, model = build_fcn((128, 8), 100, 'nope')
 
     if (SKILLED_FORGERY == True):
-        X_train = X
-        y_train = y
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=RANDOM_STATE)
+        X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.25, random_state=RANDOM_STATE)
 
         print("FILE FORGERY: "+ FILENAME_FORGERY)
         df_f = pd.read_csv(FILENAME_FORGERY)
@@ -86,15 +86,15 @@ def main():
         y = enc.transform(y.reshape(-1, 1)).toarray()
         X = X.reshape(-1, 128, 8)
         
-        X_test = X
-        y_test = y
-        X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.25, random_state=RANDOM_STATE)
+        X_test = np.concatenate((X_test, X))
+        y_test = np.concatenate((y_test, y))        
 
     else:
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=RANDOM_STATE)
         X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.25, random_state=RANDOM_STATE)
 
     model.load_weights("FCN_MCYT_Random.hdf5")
+    
     y_pred = model.predict(X_test)
     
     accuracy = metrics.accuracy_score(np.argmax(y_test, axis=-1), 

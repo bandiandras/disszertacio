@@ -12,6 +12,9 @@ __pycache__/
 #hdf5 files
 *.hdf5
 
+#xlsx files
+*.xlsx
+
 # Distribution / packaging
 .Python
 build/

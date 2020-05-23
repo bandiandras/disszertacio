@@ -66,18 +66,24 @@ def main():
     X = X.reshape(-1, 128, 8)
 
     savedModelName = ''
-    if (SKILLED_FORGERY == True):
-        savedModelName = 'FCN_MOBISIG_Skilled.hdf5'
-    else:
-        savedModelName = 'FCN_MMOBISIG_Random.hdf5'
-    #MCYT
-    # cb, model = build_fcn((128, 8), 100, savedModelName)
-    #MOBISIG
-    cb, model = build_fcn((128, 8), 83, savedModelName)
 
+    if DATASET == "MCYT":
+        if (SKILLED_FORGERY == True):
+            savedModelName = 'FCN_MCYT_Skilled.hdf5'
+        else:
+            savedModelName = 'FCN_MCYT_Random.hdf5'
+        cb, model = build_fcn((128, 8), 100, savedModelName)
+    if DATASET == "MOBISIG":
+        if (SKILLED_FORGERY == True):
+            savedModelName = 'FCN_MOBISIG_Skilled.hdf5'
+        else:
+            savedModelName = 'FCN_MOBISIG_Random.hdf5'
+        cb, model = build_fcn((128, 8), 83, savedModelName)
+
+    
     if (SKILLED_FORGERY == True):
-        X_train = X
-        y_train = y
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=RANDOM_STATE)
+        X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.25, random_state=RANDOM_STATE)
 
         print("FILE FORGERY: "+ FILENAME_FORGERY)
         df_f = pd.read_csv(FILENAME_FORGERY)
@@ -92,9 +98,8 @@ def main():
         y = enc.transform(y.reshape(-1, 1)).toarray()
         X = X.reshape(-1, 128, 8)
         
-        X_test = X
-        y_test = y
-        X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.25, random_state=RANDOM_STATE)
+        X_test = np.concatenate((X_test, X))
+        y_test = np.concatenate((y_test, y))        
 
     else:
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=RANDOM_STATE)
@@ -111,8 +116,8 @@ def main():
     duration = time.time() - start_time
     y_pred = model.predict(X_test)
     
-    metrics.accuracy_score(np.argmax(y_test, axis=-1),
-                       np.argmax(model.predict(X_test), axis=-1))
+    print(metrics.accuracy_score(np.argmax(y_test, axis=-1),
+                       np.argmax(model.predict(X_test), axis=-1)))
     keras.backend.clear_session() 
 
 
