@@ -83,6 +83,15 @@ def compute_AUC_EER(positive_scores, negative_scores):
     y = np.concatenate((zeros, ones))
     scores = np.concatenate((negative_scores, positive_scores))
     fpr, tpr, threshold = metrics.roc_curve(y, scores, pos_label=1)
+
+    # plt.plot(fpr, tpr)
+    # plt.plot(fpr, tpr, '*')
+    # plt.title("AUC")
+    # plt.xlabel('TPR values')
+    # plt.ylabel('FPR values')
+    # plt.fill_between(fpr, tpr)
+    # plt.show()
+
     roc_auc = metrics.auc(fpr, tpr)
     # Calculating EER
     fnr = 1-tpr

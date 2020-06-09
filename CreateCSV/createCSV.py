@@ -27,6 +27,7 @@ def main():
 
         data = utils.readCSVToArray(listOfFiles[cnt])
         sigaWithCharacteristics = utils.calculateCharacterstics(data)
+        # itt kiboviteni
         selectedCharacteristiclist = utils.selectCharacteristics(sigaWithCharacteristics)
         #check filename if signature is genuine or forgery
         #genuine contains v, forgery contains f
