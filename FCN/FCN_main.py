@@ -107,12 +107,22 @@ def main():
 
     mini_batch_size = int(min(X_train.shape[0]/10, BATCH_SIZE))
     start_time = time.time()
-    hist = model.fit(X_train, y_train, 
+    history = model.fit(X_train, y_train, 
                         batch_size=mini_batch_size, 
                         epochs=EPOCHS,
                         verbose=True, 
                         validation_data=(X_val, y_val), 
                         callbacks=cb)
+
+    #plot accuracies
+    plt.plot(history.history['categorical_accuracy'])
+    plt.plot(history.history['val_categorical_accuracy'])
+    plt.title('Model Accuracy')
+    plt.ylabel('accuracy')
+    plt.xlabel('epoch')
+    plt.legend(['Train', 'Validation'], loc='upper left')
+    plt.show()
+
     duration = time.time() - start_time
     y_pred = model.predict(X_test)
     

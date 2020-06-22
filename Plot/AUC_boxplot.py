@@ -36,7 +36,10 @@ def main():
     )
 
     handles, _ = ax.get_legend_handles_labels()
+    ax.set_title('AUC értékek Random és Skilled forgery esetén - MCYT adathamlaz')
     ax.legend(handles, ['AUC - Skilled Forgery', 'AUC - Random Forgery'])
+    plt.xlabel('Random/Skilled')
+    plt.ylabel('AUC')
     plt.show(ax)
     
 

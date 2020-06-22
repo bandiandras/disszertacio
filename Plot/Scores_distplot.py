@@ -31,11 +31,11 @@ def main():
     negative_scores = flatten(negative_scores)
     
     # Histograms for each species
-    sns.distplot(negative_scores, label="Negative Scores", kde=False)
-    sns.distplot(positive_scores, label="Positive Scores", kde=False)
+    sns.distplot(negative_scores, label="Negatív score-ok", kde=False)
+    sns.distplot(positive_scores, label="Pozitív score-ok", kde=False)
 
     # Add title
-    plt.title("Distribution of negatve and positive scores returned by OneClass SVM")
+    plt.title("Pozitív és negatív score-ok eloszlása")
 
     # Force legend to appear
     plt.legend()

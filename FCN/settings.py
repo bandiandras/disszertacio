@@ -3,7 +3,7 @@ FILENAME_FORGERY = r'C:\Users\andra\Documents\Egyetem\Mesteri\Disszentacio\Proje
 
 RANDOM_STATE = 11235
 BATCH_SIZE = 16
-EPOCHS = 500
+EPOCHS = 100
 
 SKILLED_FORGERY = False
 

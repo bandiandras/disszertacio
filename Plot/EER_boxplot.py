@@ -36,7 +36,10 @@ def main():
     )
 
     handles, _ = ax.get_legend_handles_labels()
+    ax.set_title('EER értékek Random és Skilled forgery esetén - MCYT adathamlaz')
     ax.legend(handles, ['EER - Skilled Forgery', 'EER - Random Forgery'])
+    plt.xlabel('Random/Skilled')
+    plt.ylabel('EER')
     plt.show(ax)
     
 
