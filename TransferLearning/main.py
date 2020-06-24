@@ -20,107 +20,6 @@ from sklearn import metrics
 from Utils.utils import *
 
 
-def build_resnet(input_shape, nb_classes, file_path):
-    n_feature_maps = 64
-    input_layer = keras.layers.Input(input_shape)
-
-    # BLOCK 1 
-    conv_x = keras.layers.Conv1D(filters=n_feature_maps, kernel_size=8, padding='same')(input_layer)
-    conv_x = keras.layers.BatchNormalization()(conv_x)
-    conv_x = keras.layers.Activation('relu')(conv_x)
-    conv_y = keras.layers.Conv1D(filters=n_feature_maps, kernel_size=5, padding='same')(conv_x)
-    conv_y = keras.layers.BatchNormalization()(conv_y)
-    conv_y = keras.layers.Activation('relu')(conv_y)
-    conv_z = keras.layers.Conv1D(filters=n_feature_maps, kernel_size=3, padding='same')(conv_y)
-    conv_z = keras.layers.BatchNormalization()(conv_z)
-
-    # expand channels for the sum 
-    shortcut_y = keras.layers.Conv1D(filters=n_feature_maps, kernel_size=1, padding='same')(input_layer)
-    shortcut_y = keras.layers.BatchNormalization()(shortcut_y)
-    output_block_1 = keras.layers.add([shortcut_y, conv_z])
-    output_block_1 = keras.layers.Activation('relu')(output_block_1)
-
-    # BLOCK 2 
-    conv_x = keras.layers.Conv1D(filters=n_feature_maps*2, kernel_size=8, padding='same')(output_block_1)
-    conv_x = keras.layers.BatchNormalization()(conv_x)
-    conv_x = keras.layers.Activation('relu')(conv_x)
-    conv_y = keras.layers.Conv1D(filters=n_feature_maps*2, kernel_size=5, padding='same')(conv_x)
-    conv_y = keras.layers.BatchNormalization()(conv_y)
-    conv_y = keras.layers.Activation('relu')(conv_y)
-    conv_z = keras.layers.Conv1D(filters=n_feature_maps*2, kernel_size=3, padding='same')(conv_y)
-    conv_z = keras.layers.BatchNormalization()(conv_z)
-
-    # expand channels for the sum 
-    shortcut_y = keras.layers.Conv1D(filters=n_feature_maps*2, kernel_size=1, padding='same')(output_block_1)
-    shortcut_y = keras.layers.BatchNormalization()(shortcut_y)
-    output_block_2 = keras.layers.add([shortcut_y, conv_z])
-    output_block_2 = keras.layers.Activation('relu')(output_block_2)
-
-    # BLOCK 3 
-    conv_x = keras.layers.Conv1D(filters=n_feature_maps*2, kernel_size=8, padding='same')(output_block_2)
-    conv_x = keras.layers.BatchNormalization()(conv_x)
-    conv_x = keras.layers.Activation('relu')(conv_x)
-    conv_y = keras.layers.Conv1D(filters=n_feature_maps*2, kernel_size=5, padding='same')(conv_x)
-    conv_y = keras.layers.BatchNormalization()(conv_y)
-    conv_y = keras.layers.Activation('relu')(conv_y)
-    conv_z = keras.layers.Conv1D(filters=n_feature_maps*2, kernel_size=3, padding='same')(conv_y)
-    conv_z = keras.layers.BatchNormalization()(conv_z)
-
-    # no need to expand channels because they are equal 
-    shortcut_y = keras.layers.BatchNormalization()(output_block_2)
-    output_block_3 = keras.layers.add([shortcut_y, conv_z])
-    output_block_3 = keras.layers.Activation('relu')(output_block_3)
-
-    # FINAL 
-    gap_layer = keras.layers.GlobalAveragePooling1D()(output_block_3)
-    output_layer = keras.layers.Dense(nb_classes, activation='softmax')(gap_layer)
-
-    model = keras.models.Model(inputs=input_layer, outputs=output_layer)
-    model.compile(loss='categorical_crossentropy', optimizer=keras.optimizers.Adam(), metrics=['categorical_accuracy'])
-    reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='loss', factor=0.5, patience=50, min_lr=0.0001)
-
-    model_checkpoint = keras.callbacks.ModelCheckpoint(filepath=file_path, monitor='loss', save_best_only=True)
-    callbacks = [reduce_lr,model_checkpoint]
-
-    return callbacks, model
-
-
-def build_fcn(input_shape, nb_classes, file_path):
-    input_layer = keras.layers.Input(input_shape)
-
-    conv1 = keras.layers.Conv1D(filters=128, kernel_size=8, padding='same')(input_layer)
-    conv1 = keras.layers.BatchNormalization()(conv1)
-    conv1 = keras.layers.Activation(activation='relu')(conv1)
-
-    conv2 = keras.layers.Conv1D(filters=256, kernel_size=5, padding='same')(conv1)
-    conv2 = keras.layers.BatchNormalization()(conv2)
-    conv2 = keras.layers.Activation('relu')(conv2)
-
-    conv3 = keras.layers.Conv1D(128, kernel_size=3,padding='same')(conv2)
-    conv3 = keras.layers.BatchNormalization()(conv3)
-    conv3 = keras.layers.Activation('relu')(conv3)
- 
-    gap_layer = keras.layers.GlobalAveragePooling1D()(conv3)
-
-    output_layer = keras.layers.Dense(nb_classes, activation='softmax')(gap_layer)
-
-    model = keras.models.Model(inputs=input_layer, outputs=output_layer)
-
-    model.compile(loss='categorical_crossentropy', optimizer = keras.optimizers.Adam(), 
-                  metrics=['categorical_accuracy'])
-
-    reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='loss', factor=0.5, patience=50, 
-                                                  min_lr=0.0001)
-    
-    model_checkpoint = keras.callbacks.ModelCheckpoint(filepath=file_path, monitor='loss', 
-                                                       save_best_only=True)
-
-    callbacks = [reduce_lr,model_checkpoint]
-
-    return callbacks, model
-
-
-
 def OneClassSVMClassifierCalculateAUCEER(positive_scores, negative_scores):
     zeros = np.zeros(len(negative_scores))
     ones  = np.ones(len(positive_scores))
@@ -228,7 +127,8 @@ def get_model_output_features( df ):
     df.to_csv('features.csv', header = False, index=False)  
     return df
 
-def fine_tune_mode_and_get_model_output_features( df ):
+#return forgery features as well
+def fine_tune_mode_and_get_model_output_features( df, df_f = None ):
     df_train, df_test = split_data(df)
 
     y = df_train[df_train.columns[-1]].values
@@ -273,7 +173,22 @@ def fine_tune_mode_and_get_model_output_features( df ):
     df = pd.DataFrame( features )
     df['user'] = y 
     df.to_csv('features.csv', header = False, index=False)  
-    return df, df_test
+
+    if (df_f is not None):
+        array = df_f.values
+        nsamples, nfeatures = array.shape
+        nfeatures = nfeatures -1 
+        X = array[:,0:nfeatures]
+        y = array[:,-1]
+        X = X.reshape(-1, FEATURES, DIMENSIONS)
+
+        X = np.asarray(X).astype(np.float32)
+
+        features_forgery = model.predict( X )
+        df_f = pd.DataFrame( features_forgery )
+        df_f['user'] = y 
+        df_f.to_csv('features_forgery.csv', header = False, index=False)  
+    return df, df_test, df_f
 
 def main():
     auc_list = []
@@ -292,7 +207,7 @@ def main():
     df_f = utils.standardize_rows(df_f)
 
     if (FINE_TUNE):        
-        features, df_test =  fine_tune_mode_and_get_model_output_features( df )
+        features, df_test, features_forgery =  fine_tune_mode_and_get_model_output_features( df, df_f )
         userids = utils.create_userids( df_test )
         NUM_USERS = len(userids)
         
@@ -300,9 +215,9 @@ def main():
         features = get_model_output_features(df)
         userids = utils.create_userids( df )
         NUM_USERS = len(userids)
+        features_forgery = get_model_output_features(df_f)
 
-    features_forgery = get_model_output_features(df_f)
-
+   
     for i in range(0,NUM_USERS):
             if SKILLED_FORGERY:
                 user_train, user_test, other_users_array = returnTraindAndTestDataForgery(features, features_forgery, userids, i)
